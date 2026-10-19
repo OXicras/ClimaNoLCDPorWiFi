@@ -22,7 +22,7 @@ void setup()
   lcd.print("Conectando Wifi");
   while(WiFi.status() != WL_CONNECTED)
   {
-    for(int i = 16; i < 18; i++)
+    for(int i = 16; i < 19; i++)
     {
       lcd.setCursor(i, 0);  
       lcd.print(".");
