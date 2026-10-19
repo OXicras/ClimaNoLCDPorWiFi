@@ -18,28 +18,36 @@ void setup()
   Serial.begin(115200);
   WiFi.begin(nomeRedeWiFi, senhaRedeWiFi);
 
-  Serial.print("\n\r Iniciando conexão WiFi\n\r");
+  lcd.setCursor(0, 0);
+  lcd.print("Conectando Wifi");
   while(WiFi.status() != WL_CONNECTED)
   {
-    Serial.print("#");
-    delay(500);
+    for(int i = 16; i < 18; i++)
+    {
+      lcd.setCursor(i, 0);  
+      lcd.print(".");
+      if(WiFi.status() == WL_CONNECTED)
+        break;
+      delay(500);
+    }
+    lcd.setCursor(16, 0);
+    lcd.print("   ");
   }
-
-  Serial.printf("\n\rConectado com sucesso\n\r");
-  Serial.printf("Endereco IP: %s\n\r", WiFi.localIP().toString().c_str());
-  Serial.printf("Endereco MAC: %s\n\r", WiFi.macAddress().c_str());
-
-  String clima;
-  int temperatura, sensacaoTermica;
-  clima = pedirParaApiClima("%C");
-  temperatura = pedirParaApiClima("%t").toInt();
-  sensacaoTermica = pedirParaApiClima("%f").toInt();
-
-  Serial.printf("Condicão climática para hoje: %s\n\r", clima.c_str());
-  Serial.printf("Temperatura Atual %d° C e sensacão térmica de %d° C", temperatura, sensacaoTermica);
+  lcd.setCursor(0, 0);
+  lcd.print("Conectado");
 }
 
-void loop() {}
+void loop() 
+{
+  lcd.setCursor(0, 0);
+  lcd.print("Condicao Climatica:");
+  lcd.setCursor(0, 1);
+  lcd.print(pedirParaApiClima("%C").c_str());
+  lcd.setCursor(0, 2);
+  lcd.printf("Temperatura: %d°C", pedirParaApiClima("%t").toInt());
+  lcd.setCursor(0, 3);
+  lcd.printf("Sensacao: %d°C", pedirParaApiClima("%f").toInt());
+}
 
 String pedirParaApiClima(String codigo)
 {
