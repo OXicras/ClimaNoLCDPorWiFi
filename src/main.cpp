@@ -94,18 +94,26 @@ void loop()
     tempoInicial = now;
   }
 
-  String condicaoClimatica = pedirParaApiClima("%C");
-  for(int i = 0; i < sizeof(condicaoClimatica)-4; i++)
-  {
-    lcd.setCursor(0, 1);
-    String textoCortado = condicaoClimatica.substring(0+i,20+i);
-    lcd.printf("Condicao climatica: %s", textoCortado);
-    delay(1000);
-  } 
   lcd.setCursor(0, 2);
   lcd.printf("Temperatura: %d C", pedirParaApiClima("%t").toInt());
   lcd.setCursor(0, 3);
   lcd.printf("Sensacao: %d C", pedirParaApiClima("%f").toInt());
+
+  static int i = 0;
+  static unsigned long tempoInicialRolagemTexto = 0;
+  String condicaoClimatica = pedirParaApiClima("%C");
+  while(i < sizeof(condicaoClimatica)-7)
+  {
+    if(now >= tempoInicialRolagemTexto + 1000)
+    {
+      lcd.setCursor(0, 1);
+      String textoCortado = condicaoClimatica.substring(0+i,20+i);
+      lcd.print(textoCortado);
+      i++;
+      tempoInicialRolagemTexto = now;
+    }
+  }
+  i = 0;
 }
 
 String pedirParaApiClima(String codigo)
