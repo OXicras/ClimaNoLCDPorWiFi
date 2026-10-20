@@ -75,6 +75,9 @@ void setup()
   lcd.print("Sincronizado");
   delay(500);
   lcd.clear();
+
+  lcd.setCursor(0, 0);
+  lcd.printf("%s, %02d:%02d", DIAS[agora.tm_wday], agora.tm_hour, agora.tm_min);
 }
 
 void loop() 
@@ -92,13 +95,13 @@ void loop()
   }
 
   const char* condicaoClimatica = pedirParaApiClima("%C").c_str();
-  if(strlen(condicaoClimatica) > 20)
-    for(int i = 0; i < strlen(condicaoClimatica) - 20; i ++)
-    {
-      lcd.setCursor((i*-1), 1);
-      lcd.print(condicaoClimatica);
-    }
-
+  // for(int i = 0; i < strlen(condicaoClimatica) - 20; i ++)
+  // {
+  //   lcd.setCursor((i*-1), 1);
+  //   lcd.print(condicaoClimatica);
+  // }
+  lcd.setCursor(0, 1);
+  lcd.printf("Condicao climatica: %c", condicaoClimatica);
   lcd.setCursor(0, 2);
   lcd.printf("Temperatura: %d C", pedirParaApiClima("%t").toInt());
   lcd.setCursor(0, 3);
