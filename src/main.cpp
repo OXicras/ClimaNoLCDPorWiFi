@@ -94,14 +94,14 @@ void loop()
     tempoInicial = now;
   }
 
-  const char* condicaoClimatica = pedirParaApiClima("%C").c_str();
-  // for(int i = 0; i < strlen(condicaoClimatica) - 20; i ++)
-  // {
-  //   lcd.setCursor((i*-1), 1);
-  //   lcd.print(condicaoClimatica);
-  // }
-  lcd.setCursor(0, 1);
-  lcd.printf("Condicao climatica: %c", condicaoClimatica);
+  String condicaoClimatica = pedirParaApiClima("%C");
+  for(int i = 0; i < sizeof(condicaoClimatica)-4; i++)
+  {
+    lcd.setCursor(0, 1);
+    String textoCortado = condicaoClimatica.substring(0+i,20+i);
+    lcd.printf("Condicao climatica: %s", textoCortado);
+    delay(1000);
+  } 
   lcd.setCursor(0, 2);
   lcd.printf("Temperatura: %d C", pedirParaApiClima("%t").toInt());
   lcd.setCursor(0, 3);
