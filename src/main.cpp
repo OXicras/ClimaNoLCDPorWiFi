@@ -3,6 +3,8 @@
 #include <HTTPClient.h>
 #include <LiquidCrystal_I2C.h>
 #include <time.h>
+#include <string.h>
+#include <esp_sntp.h>
 
 LiquidCrystal_I2C lcd (0x27, 20, 4);
 
@@ -20,6 +22,7 @@ const char* DIAS[] = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"};
 
 void setup() 
 {
+  sntp_set_sync_interval(60*60*1000); //? intervalo de atualizacao da hora na internet padrao 1*60*60*1000 (1 hora)
   lcd.init();
   lcd.backlight();
   Serial.begin(115200);
@@ -41,14 +44,16 @@ void setup()
     lcd.print("   ");
     delay(200);
   }
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Conectado");
-  delay(300);
+  delay(500);
 
   //? Configuracao de fuso e servidores NTP e inicia a sincronizacao
   configTzTime(FUSO, NTP1, NTP2);
 
   struct tm agora;
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Sincronizando hora");
   while(!getLocalTime(&agora)) //? o parametro é o endereco da estrutura tipo tm
@@ -65,26 +70,35 @@ void setup()
     lcd.print("   ");
     delay(200);
   } 
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Sincronizado");
-  delay(300);
+  delay(500);
+  lcd.clear();
 }
 
 void loop() 
 {
-  
+  unsigned long now = millis();
+  static unsigned long tempoInicial = 0;
+  const long umMinuto = 60000;
+
   struct tm agora;
-  if(getLocalTime(&agora))
+  if(getLocalTime(&agora) && now >= tempoInicial + umMinuto)
   {
-    lcd.setCursor(0, 1);
+    lcd.setCursor(0, 0);
     lcd.printf("%s, %02d:%02d", DIAS[agora.tm_wday], agora.tm_hour, agora.tm_min);
+    tempoInicial = now;
   }
-  
-  //char condicaoClimatica[] = pedirParaApiClima("%C").c_str();
-  lcd.setCursor(0, 0);
-  lcd.print("Condicao Climatica:");
-  lcd.setCursor(0, 1);
-  //lcd.print();
+
+  const char* condicaoClimatica = pedirParaApiClima("%C").c_str();
+  if(strlen(condicaoClimatica) > 20)
+    for(int i = 0; i < strlen(condicaoClimatica) - 20; i ++)
+    {
+      lcd.setCursor((i*-1), 1);
+      lcd.print(condicaoClimatica);
+    }
+
   lcd.setCursor(0, 2);
   lcd.printf("Temperatura: %d C", pedirParaApiClima("%t").toInt());
   lcd.setCursor(0, 3);
