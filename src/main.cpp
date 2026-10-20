@@ -22,7 +22,7 @@ void setup()
   lcd.print("Conectando Wifi");
   while(WiFi.status() != WL_CONNECTED)
   {
-    for(int i = 16; i < 19; i++)
+    for(int i = 15; i < 18; i++)
     {
       lcd.setCursor(i, 0);  
       lcd.print(".");
@@ -30,8 +30,9 @@ void setup()
         break;
       delay(500);
     }
-    lcd.setCursor(16, 0);
+    lcd.setCursor(15, 0);
     lcd.print("   ");
+    delay(200);
   }
   lcd.setCursor(0, 0);
   lcd.print("Conectado");
@@ -44,9 +45,9 @@ void loop()
   lcd.setCursor(0, 1);
   lcd.print(pedirParaApiClima("%C").c_str());
   lcd.setCursor(0, 2);
-  lcd.printf("Temperatura: %d°C", pedirParaApiClima("%t").toInt());
+  lcd.printf("Temperatura: %d C", pedirParaApiClima("%t").toInt());
   lcd.setCursor(0, 3);
-  lcd.printf("Sensacao: %d°C", pedirParaApiClima("%f").toInt());
+  lcd.printf("Sensacao: %d C", pedirParaApiClima("%f").toInt());
 }
 
 String pedirParaApiClima(String codigo)
